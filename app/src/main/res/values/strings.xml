@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">AirHockey</string>
+
+    <string name = "description_vertex_shader">
+        A vertex shader generates the final position of each vertex and is run once per vertex.
+        Once the final positions are known, OpenGL will take the visible set of vertices and assemble
+        them into points, lines, and triangles
+
+    </string><string name = "description_fragment_shader">
+        A fragment shader generates the final color of each fragment of a point,
+        line, or triangle and is run once per fragment. A fragment is a small,
+        rectangular area of a single color, analogous to a pixel on a computer
+        screen.
+    </string>
+
+</resources>
