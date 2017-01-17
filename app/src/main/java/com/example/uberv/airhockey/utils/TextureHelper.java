@@ -8,13 +8,16 @@ import android.util.Log;
 
 import static android.opengl.GLES20.GL_LINEAR;
 import static android.opengl.GLES20.GL_LINEAR_MIPMAP_LINEAR;
+import static android.opengl.GLES20.GL_TEXTURE;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
 import static android.opengl.GLES20.GL_TEXTURE_MAG_FILTER;
 import static android.opengl.GLES20.GL_TEXTURE_MIN_FILTER;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glDeleteTextures;
 import static android.opengl.GLES20.glGenTextures;
+import static android.opengl.GLES20.glGenerateMipmap;
 import static android.opengl.GLES20.glTexParameteri;
+import static android.opengl.GLUtils.texImage2D;
 
 public abstract class TextureHelper {
     public static final String LOG_TAG = TextureHelper.class.getSimpleName();
@@ -38,7 +41,6 @@ public abstract class TextureHelper {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         // we need original image data
         options.inScaled = false;
-
         final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
         if (bitmap == null) {
             Log.w(LOG_TAG, "Resource ID " + resourceId + " could not be decoded.");
@@ -46,7 +48,7 @@ public abstract class TextureHelper {
             return 0;
         }
 
-        // 3 bind bitmap to the texture id
+        // 3 bind bitmap to the texture id (tell OpenGL that future texture calls are applied to this texture object)
         glBindTexture(GL_TEXTURE_2D, textureObjectIds[0]);
 
         // 4 configure texture
@@ -55,6 +57,22 @@ public abstract class TextureHelper {
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
         // set magnification filter to bilinear
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+        // 5 load bitmap data into OpenGL (into currently bound texture object)
+        texImage2D(GL_TEXTURE_2D,0,bitmap,0);
+
+        // optional: release bitmap data
+        bitmap.recycle();
+
+        // 6 generate mipmaps
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        // 7 unbind from the texture
+        glBindTexture(GL_TEXTURE_2D,0);
+
+        // return texture object ID
+        return textureObjectIds[0];
+
     }
 
 }

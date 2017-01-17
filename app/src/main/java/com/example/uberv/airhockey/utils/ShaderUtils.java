@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import static android.opengl.GLES20.GL_COMPILE_STATUS;
+import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
 import static android.opengl.GLES20.GL_LINK_STATUS;
 import static android.opengl.GLES20.GL_VALIDATE_STATUS;
+import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.glAttachShader;
 import static android.opengl.GLES20.glCompileShader;
 import static android.opengl.GLES20.glCreateProgram;
@@ -135,6 +137,22 @@ public class ShaderUtils {
         Log.v(LOG_TAG, "Results of validating program: " + validateStatus[0]
                 + "\nLog:" + glGetProgramInfoLog(programObjectId));
         return validateStatus[0] != 0;
+    }
+
+    public static int buildProgram(String vertexShaderSource,
+                                   String fragmentShaderSource) {
+        int program;
+
+        // Compile the shaders.
+        int vertexShader = createShader(GL_VERTEX_SHADER,vertexShaderSource);
+        int fragmentShader = createShader(GL_FRAGMENT_SHADER,fragmentShaderSource);
+
+        // Link them into a shader program.
+        program = linkProgram(vertexShader, fragmentShader);
+
+        validateProgram(program);
+
+        return program;
     }
 
 }
